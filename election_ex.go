@@ -35,7 +35,7 @@ func ElectionControler(in chan int) {
 
 	temp.tipo = 2
 	chans[3] <- temp
-	fmt.Printf("Controle: mudar o processo 0 para falho\n")
+	fmt.Printf("Controle: mudar o processo 0 para falho\n") 
 
 	fmt.Printf("Controle: confirmação %d\n", <-in) // receber e imprimir confirmação
 
