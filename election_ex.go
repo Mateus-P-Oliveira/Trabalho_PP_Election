@@ -1,5 +1,5 @@
-// Código exemplo para o trabaho de sistemas distribuidos (eleicao em anel)
-// By Cesar De Rose - 2022
+//Código exemplo para o trabaho de sistemas distribuidos (eleicao em anel)
+//By Cesar De Rose - 2022
 
 package main
 
@@ -25,7 +25,7 @@ var (
 )
 
 func ElectionControler(in chan int) {
-	defer wg.Done()
+	defer wg.Done() //Só executada no final da função
 
 	var temp mensagem
 
@@ -35,7 +35,7 @@ func ElectionControler(in chan int) {
 
 	temp.tipo = 2
 	chans[3] <- temp
-	fmt.Printf("Controle: mudar o processo 0 para falho\n") 
+	fmt.Printf("Controle: mudar o processo 0 para falho\n")
 
 	fmt.Printf("Controle: confirmação %d\n", <-in) // receber e imprimir confirmação
 
