@@ -1,15 +1,14 @@
 package main
 
 import (
-	"sync"
-	"fmt"
 	"math/rand"
+	"sync"
 	"time"
-  )
+)
 
 type nodo struct {
-	id  int  // Id do Nodo
-	act bool true // Se esta ativo ou não
+	id int // Id do Nodo
+	//act bool  // Se esta ativo ou não
 }
 
 var (
@@ -23,9 +22,27 @@ var (
 	wg       sync.WaitGroup // wg is used to wait for the program to finish
 )
 
-func ElectionControler(){
+func ElectionControler() {
 	defer wg.Done()
+
 	rand.Seed(time.Now().UnixNano())
-	int randomErrorNode <- rand.Intn(5)
+	randomErrorNode := rand.Intn(5)
+
+}
+
+func RingCreation() {
+	defer wg.Done()
+
+	// variaveis locais que indicam se este processo é o lider e se esta ativo
+
+	var actualLeader int
+	var bFailed bool = false // todos inciam sem falha
+
+	actualLeader = leader // indicação do lider veio por parâmatro
+
+}
+
+func main() {
+	wg.Add(5)
 
 }
