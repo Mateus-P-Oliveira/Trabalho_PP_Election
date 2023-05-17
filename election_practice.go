@@ -1,3 +1,63 @@
+/*package main
+
+import (
+	"fmt"
+	"math/rand"
+	"sync"
+	"time"
+)
+
+type nodo struct {
+	id int // Id do Nodo
+	//act bool  // Se esta ativo ou não
+	members[4] int
+}
+
+var (
+	channels = []chan nodo{ // vetor de canias para formar o anel de eleicao - chan[0], chan[1] and chan[2] ...
+		make(chan nodo),
+		make(chan nodo),
+		make(chan nodo),
+		make(chan nodo),
+	}
+	controls = make(chan int)
+	wg       sync.WaitGroup // wg is used to wait for the program to finish
+)
+
+func ElectionControler() {
+	defer wg.Done()
+	var temp nodo
+	rand.Seed(time.Now().UnixNano())
+	randomErrorNode := rand.Intn(5) //Mudar depois para associar direto
+	temp.act = false
+	channels[randomErrorNode] <- temp
+	//temp.id = randomErrorNode
+
+}
+
+func RingCreation(TaskId int, in chan nodo, out chan nodo, leader int) {
+	defer wg.Done()
+
+	// variaveis locais que indicam se este processo é o lider e se esta ativo
+
+	//var currentLeader int
+	//var act bool = true // todos inciam sem falha
+
+	//currentLeader = leader // indicação do lider veio por parâmatro
+	temp := <-in
+	fmt.Printf("%2d: recebi mensagem %d, [ %d, %d, %d ]\n", TaskId, temp.id, temp.members[0], temp.members[1], temp.members[2])
+}
+
+func main() {
+	wg.Add(5)
+
+	go RingCreation(0, channels[3], channels[0], 0) // este é o lider
+	go RingCreation(1, channels[0], channels[1], 0) // não é lider, é o processo 0
+	go RingCreation(2, channels[1], channels[2], 0) // não é lider, é o processo 0
+	go RingCreation(3, channels[2], channels[3], 0) // não é lider, é o processo 0
+	fmt.Println("\n   Anel de processos criado")
+}
+*/
 //Código exemplo para o trabaho de sistemas distribuidos (eleicao em anel)
 //By Cesar De Rose - 2022
 
@@ -5,7 +65,9 @@ package main
 
 import (
 	"fmt"
+	"math/rand"
 	"sync"
+	"time"
 )
 
 type mensagem struct {
@@ -26,25 +88,27 @@ var (
 
 func ElectionControler(in chan int) {
 	defer wg.Done() //Só executada no final da função
-
+	rand.Seed(time.Now().UnixNano())
+	randomErrorNode := rand.Intn(5)
+	randomErrorChannel := rand.Intn(3)
 	var temp mensagem
 
 	// comandos para o anel iciam aqui
 
 	// mudar o processo 0 - canal de entrada 3 - para falho (defini mensagem tipo 2 pra isto)
-
-	temp.tipo = 2
-	chans[3] <- temp
+	//Diz pelo processo 3 que o processo 0 deu erro
+	temp.tipo = randomErrorNode
+	chans[randomErrorChannel] <- temp
 	fmt.Printf("Controle: mudar o processo 0 para falho\n")
 
 	fmt.Printf("Controle: confirmação %d\n", <-in) // receber e imprimir confirmação
 
 	// mudar o processo 1 - canal de entrada 0 - para falho (defini mensagem tipo 2 pra isto)
 
-	temp.tipo = 2
-	chans[0] <- temp
-	fmt.Printf("Controle: mudar o processo 1 para falho\n")
-	fmt.Printf("Controle: confirmação %d\n", <-in) // receber e imprimir confirmação
+	//temp.tipo = 2
+	//chans[0] <- temp
+	//fmt.Printf("Controle: mudar o processo 1 para falho\n")
+	//fmt.Printf("Controle: confirmação %d\n", <-in) // receber e imprimir confirmação
 
 	// matar os outrs processos com mensagens não conhecidas (só pra cosumir a leitura)
 
@@ -65,10 +129,14 @@ func ElectionStage(TaskId int, in chan mensagem, out chan mensagem, leader int) 
 
 	actualLeader = leader // indicação do lider veio por parâmatro
 
-	temp := <-in // ler mensagem
-	fmt.Printf("%2d: recebi mensagem %d, [ %d, %d, %d ]\n", TaskId, temp.tipo, temp.corpo[0], temp.corpo[1], temp.corpo[2])
+	temp := <-in                                                                                                            // ler mensagem
+	fmt.Printf("%2d: recebi mensagem %d, [ %d, %d, %d ]\n", TaskId, temp.tipo, temp.corpo[0], temp.corpo[1], temp.corpo[2]) //Corpo é o vetor de votação e precisa inclunir todos valores de preocessos que pertencem ao anel
 
 	switch temp.tipo {
+	case 1:
+		{
+			fmt.Printf("Caso 1 \n")
+		}
 	case 2:
 		{
 			bFailed = true
@@ -82,6 +150,14 @@ func ElectionStage(TaskId int, in chan mensagem, out chan mensagem, leader int) 
 			fmt.Printf("%2d: falho %v \n", TaskId, bFailed)
 			fmt.Printf("%2d: lider atual %d\n", TaskId, actualLeader)
 			controle <- -5
+		}
+	case 4:
+		{
+			fmt.Printf("Caso 4 \n")
+		}
+	case 5:
+		{
+			fmt.Printf("Caso 5 \n")
 		}
 	default:
 		{
