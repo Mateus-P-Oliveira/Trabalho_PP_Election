@@ -91,13 +91,15 @@ func ElectionControler(in chan int) {
 
 	var temp mensagem
 	rand.Seed(time.Now().UnixNano())
-	randomErrorNode := rand.Intn(2)
+	randomErrorNode := rand.Intn(5)
 	randomErrorChannel := rand.Intn(3) //Ele da erro ao ser usado como o temp
 	// comandos para o anel iciam aqui
+
 	fmt.Printf("consome %d %d\n", randomErrorNode, randomErrorChannel)
 	// mudar o processo 0 - canal de entrada 3 - para falho (defini mensagem tipo 2 pra isto)
 
-	temp.tipo = 2
+	temp.tipo = 3 //1 e 4 e 5 se forem atribuidos dão erro
+	//Não posso deixar de atribuir valor pros Channels
 	chans[3] <- temp
 	fmt.Printf("Controle: mudar o processo 0 para falho\n")
 
