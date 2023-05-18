@@ -88,27 +88,27 @@ var (
 
 func ElectionControler(in chan int) {
 	defer wg.Done() //Só executada no final da função
-	rand.Seed(time.Now().UnixNano())
-	randomErrorNode := rand.Intn(5)
-	randomErrorChannel := rand.Intn(3)
+
 	var temp mensagem
-
+	rand.Seed(time.Now().UnixNano())
+	randomErrorNode := rand.Intn(2)
+	randomErrorChannel := rand.Intn(3) //Ele da erro ao ser usado como o temp
 	// comandos para o anel iciam aqui
-
+	fmt.Printf("consome %d %d\n", randomErrorNode, randomErrorChannel)
 	// mudar o processo 0 - canal de entrada 3 - para falho (defini mensagem tipo 2 pra isto)
-	//Diz pelo processo 3 que o processo 0 deu erro
-	temp.tipo = randomErrorNode
-	chans[randomErrorChannel] <- temp
+
+	temp.tipo = 2
+	chans[3] <- temp
 	fmt.Printf("Controle: mudar o processo 0 para falho\n")
 
 	fmt.Printf("Controle: confirmação %d\n", <-in) // receber e imprimir confirmação
 
 	// mudar o processo 1 - canal de entrada 0 - para falho (defini mensagem tipo 2 pra isto)
 
-	//temp.tipo = 2
-	//chans[0] <- temp
-	//fmt.Printf("Controle: mudar o processo 1 para falho\n")
-	//fmt.Printf("Controle: confirmação %d\n", <-in) // receber e imprimir confirmação
+	temp.tipo = 2
+	chans[0] <- temp
+	fmt.Printf("Controle: mudar o processo 1 para falho\n")
+	fmt.Printf("Controle: confirmação %d\n", <-in) // receber e imprimir confirmação
 
 	// matar os outrs processos com mensagens não conhecidas (só pra cosumir a leitura)
 
