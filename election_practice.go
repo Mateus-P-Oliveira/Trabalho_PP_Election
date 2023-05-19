@@ -28,14 +28,14 @@ func ElectionControler(in chan int) {
 
 	var temp mensagem
 	rand.Seed(time.Now().UnixNano())
-	randomErrorNode := rand.Intn(5)
+	randomErrorNode := rand.Intn(3)
 	randomErrorChannel := rand.Intn(3) //Ele da erro ao ser usado como o temp
 	// comandos para o anel iciam aqui
 
 	fmt.Printf("consome %d %d\n", randomErrorNode, randomErrorChannel)
 	// mudar o processo 0 - canal de entrada 3 - para falho (defini mensagem tipo 2 pra isto)
 
-	temp.tipo = 1 //1 e 4 e 5 se forem atribuidos dão erro
+	temp.tipo = randomErrorNode //1 e 4 e 5 se forem atribuidos dão erro
 	//Não posso deixar de atribuir valor pros Channels
 	chans[3] <- temp
 	fmt.Printf("Controle: mudar o processo 0 para falho\n")
@@ -44,17 +44,17 @@ func ElectionControler(in chan int) {
 
 	// mudar o processo 1 - canal de entrada 0 - para falho (defini mensagem tipo 2 pra isto)
 
-	temp.tipo = 2
+	temp.tipo = randomErrorNode
 	chans[0] <- temp
 	fmt.Printf("Controle: mudar o processo 1 para falho\n")
 	fmt.Printf("Controle: confirmação %d\n", <-in) // receber e imprimir confirmação
 
 	// matar os outrs processos com mensagens não conhecidas (só pra cosumir a leitura)
 
-	temp.tipo = 4 //Não podem enviar para o mesmo tipo de mensagem sem o imprimir confirmação
+	temp.tipo = randomErrorNode //Não podem enviar para o mesmo tipo de mensagem sem o imprimir confirmação
 	chans[1] <- temp
 	fmt.Printf("Controle: confirmação %d\n", <-in) // receber e imprimir confirmação //Precisa dele para não dar deadlock
-	temp.tipo = 5
+	temp.tipo = randomErrorNode
 	chans[2] <- temp
 	fmt.Printf("Controle: confirmação %d\n", <-in) // receber e imprimir confirmação
 
@@ -78,7 +78,7 @@ func ElectionStage(TaskId int, in chan mensagem, out chan mensagem, leader int) 
 	case 1:
 		{
 			fmt.Printf("Caso 1 \n")
-			controle <- -3
+			controle <- -5
 		}
 	case 2:
 		{
@@ -108,6 +108,7 @@ func ElectionStage(TaskId int, in chan mensagem, out chan mensagem, leader int) 
 		{
 			fmt.Printf("%2d: não conheço este tipo de mensagem\n", TaskId)
 			fmt.Printf("%2d: lider atual %d\n", TaskId, actualLeader)
+			controle <- -5
 
 		}
 	}
