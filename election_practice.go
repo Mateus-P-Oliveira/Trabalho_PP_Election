@@ -51,9 +51,9 @@ func ElectionControler(in chan int) {
 
 	// matar os outrs processos com mensagens não conhecidas (só pra cosumir a leitura)
 
-	temp.tipo = 4
+	temp.tipo = 4 //Não podem enviar para o mesmo tipo de mensagem sem o imprimir confirmação
 	chans[1] <- temp
-	fmt.Printf("Controle: confirmação %d\n", <-in) // receber e imprimir confirmação
+	fmt.Printf("Controle: confirmação %d\n", <-in) // receber e imprimir confirmação //Precisa dele para não dar deadlock
 	temp.tipo = 5
 	chans[2] <- temp
 	fmt.Printf("Controle: confirmação %d\n", <-in) // receber e imprimir confirmação
