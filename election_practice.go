@@ -1,66 +1,3 @@
-/*package main
-
-import (
-	"fmt"
-	"math/rand"
-	"sync"
-	"time"
-)
-
-type nodo struct {
-	id int // Id do Nodo
-	//act bool  // Se esta ativo ou não
-	members[4] int
-}
-
-var (
-	channels = []chan nodo{ // vetor de canias para formar o anel de eleicao - chan[0], chan[1] and chan[2] ...
-		make(chan nodo),
-		make(chan nodo),
-		make(chan nodo),
-		make(chan nodo),
-	}
-	controls = make(chan int)
-	wg       sync.WaitGroup // wg is used to wait for the program to finish
-)
-
-func ElectionControler() {
-	defer wg.Done()
-	var temp nodo
-	rand.Seed(time.Now().UnixNano())
-	randomErrorNode := rand.Intn(5) //Mudar depois para associar direto
-	temp.act = false
-	channels[randomErrorNode] <- temp
-	//temp.id = randomErrorNode
-
-}
-
-func RingCreation(TaskId int, in chan nodo, out chan nodo, leader int) {
-	defer wg.Done()
-
-	// variaveis locais que indicam se este processo é o lider e se esta ativo
-
-	//var currentLeader int
-	//var act bool = true // todos inciam sem falha
-
-	//currentLeader = leader // indicação do lider veio por parâmatro
-	temp := <-in
-	fmt.Printf("%2d: recebi mensagem %d, [ %d, %d, %d ]\n", TaskId, temp.id, temp.members[0], temp.members[1], temp.members[2])
-}
-
-func main() {
-	wg.Add(5)
-
-	go RingCreation(0, channels[3], channels[0], 0) // este é o lider
-	go RingCreation(1, channels[0], channels[1], 0) // não é lider, é o processo 0
-	go RingCreation(2, channels[1], channels[2], 0) // não é lider, é o processo 0
-	go RingCreation(3, channels[2], channels[3], 0) // não é lider, é o processo 0
-	fmt.Println("\n   Anel de processos criado")
-}
-*/
-//Código exemplo para o trabaho de sistemas distribuidos (eleicao em anel)
-//By Cesar De Rose - 2022
-
 package main
 
 import (
@@ -98,7 +35,7 @@ func ElectionControler(in chan int) {
 	fmt.Printf("consome %d %d\n", randomErrorNode, randomErrorChannel)
 	// mudar o processo 0 - canal de entrada 3 - para falho (defini mensagem tipo 2 pra isto)
 
-	temp.tipo = 3 //1 e 4 e 5 se forem atribuidos dão erro
+	temp.tipo = 1 //1 e 4 e 5 se forem atribuidos dão erro
 	//Não posso deixar de atribuir valor pros Channels
 	chans[3] <- temp
 	fmt.Printf("Controle: mudar o processo 0 para falho\n")
@@ -116,7 +53,10 @@ func ElectionControler(in chan int) {
 
 	temp.tipo = 4
 	chans[1] <- temp
+	fmt.Printf("Controle: confirmação %d\n", <-in) // receber e imprimir confirmação
+	temp.tipo = 5
 	chans[2] <- temp
+	fmt.Printf("Controle: confirmação %d\n", <-in) // receber e imprimir confirmação
 
 	fmt.Println("\n   Processo controlador concluído\n")
 }
@@ -138,6 +78,7 @@ func ElectionStage(TaskId int, in chan mensagem, out chan mensagem, leader int) 
 	case 1:
 		{
 			fmt.Printf("Caso 1 \n")
+			controle <- -3
 		}
 	case 2:
 		{
@@ -156,15 +97,18 @@ func ElectionStage(TaskId int, in chan mensagem, out chan mensagem, leader int) 
 	case 4:
 		{
 			fmt.Printf("Caso 4 \n")
+			controle <- -5
 		}
 	case 5:
 		{
 			fmt.Printf("Caso 5 \n")
+			controle <- -5
 		}
 	default:
 		{
 			fmt.Printf("%2d: não conheço este tipo de mensagem\n", TaskId)
 			fmt.Printf("%2d: lider atual %d\n", TaskId, actualLeader)
+
 		}
 	}
 
