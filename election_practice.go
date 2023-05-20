@@ -32,9 +32,6 @@ func ElectionControler(in chan int) {
 	randomErrorChannel := rand.Intn(3) //Ele da erro ao ser usado como o temp
 	// comandos para o anel iciam aqui
 
-	//fmt.Printf("consome %d %d\n", randomErrorNode, randomErrorChannel)
-	// mudar o processo 0 - canal de entrada 3 - para falho (defini mensagem tipo 2 pra isto)
-
 	temp.tipo = randomErrorNode
 	//randomErrorChannelSave := randomErrorChannel
 	//Aloca Valores dos Aneis que não forem os escolhidos-------------------
@@ -147,8 +144,7 @@ func ElectionStage(TaskId int, in chan mensagem, out chan mensagem, leader int) 
 		}
 	default:
 		{
-			//fmt.Printf("%2d: não conheço este tipo de mensagem\n", TaskId)
-			//fmt.Printf("%2d: lider atual %d\n", TaskId, actualLeader)
+
 			controle <- 99
 
 		}
