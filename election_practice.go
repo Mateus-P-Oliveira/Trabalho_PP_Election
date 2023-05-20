@@ -32,19 +32,67 @@ func ElectionControler(in chan int) {
 	randomErrorChannel := rand.Intn(3) //Ele da erro ao ser usado como o temp
 	// comandos para o anel iciam aqui
 
-	fmt.Printf("consome %d %d\n", randomErrorNode, randomErrorChannel)
+	//fmt.Printf("consome %d %d\n", randomErrorNode, randomErrorChannel)
 	// mudar o processo 0 - canal de entrada 3 - para falho (defini mensagem tipo 2 pra isto)
 
 	temp.tipo = randomErrorNode //1 e 4 e 5 se forem atribuidos dão erro
+	//Aloca Valores dos Aneis que não forem os escolhidos-------------------
+	switch randomErrorChannel {
+	case 0:
+		{
+			temp.tipo = 99 //Mensagem generica
+			chans[1] <- temp
+			fmt.Printf("%d\n", <-in) //Controle de Confirmação
+			chans[2] <- temp
+			fmt.Printf("%d\n", <-in) //Controle de Confirmação
+			chans[3] <- temp
+			fmt.Printf("%d\n", <-in) //Controle de Confirmação
+
+		}
+	case 1:
+		{
+			temp.tipo = 99 //Mensagem generica
+			chans[0] <- temp
+			fmt.Printf("%d\n", <-in) //Controle de Confirmação
+			chans[2] <- temp
+			fmt.Printf("%d\n", <-in) //Controle de Confirmação
+			chans[3] <- temp
+			fmt.Printf("%d\n", <-in) //Controle de Confirmação
+		}
+	case 2:
+		{
+			temp.tipo = 99 //Mensagem generica
+			chans[0] <- temp
+			fmt.Printf("%d\n", <-in) //Controle de Confirmação
+			chans[1] <- temp
+			fmt.Printf("%d\n", <-in) //Controle de Confirmação
+			chans[3] <- temp
+			fmt.Printf("%d\n", <-in) //Controle de Confirmação
+		}
+	case 3:
+		{
+			temp.tipo = 99 //Mensagem generica
+			chans[0] <- temp
+			fmt.Printf("%d\n", <-in) //Controle de Confirmação
+			chans[1] <- temp
+			fmt.Printf("%d\n", <-in) //Controle de Confirmação
+			chans[2] <- temp
+			fmt.Printf("%d\n", <-in) //Controle de Confirmação
+		}
+	default:
+		{
+			fmt.Printf("Nodo não existe \n")
+		}
+	}
 	//Não posso deixar de atribuir valor pros Channels
-	chans[3] <- temp
-	fmt.Printf("Controle: mudar o processo 0 para falho\n")
+	chans[randomErrorChannel] <- temp
+	fmt.Printf("Nodo: %d Recebeu: %d\n", randomErrorChannel, randomErrorNode)
 
 	fmt.Printf("Controle: confirmação %d\n", <-in) // receber e imprimir confirmação
 
 	// mudar o processo 1 - canal de entrada 0 - para falho (defini mensagem tipo 2 pra isto)
 
-	temp.tipo = randomErrorNode
+	/*temp.tipo = randomErrorNode
 	chans[0] <- temp
 	fmt.Printf("Controle: mudar o processo 1 para falho\n")
 	fmt.Printf("Controle: confirmação %d\n", <-in) // receber e imprimir confirmação
@@ -57,6 +105,7 @@ func ElectionControler(in chan int) {
 	temp.tipo = randomErrorNode
 	chans[2] <- temp
 	fmt.Printf("Controle: confirmação %d\n", <-in) // receber e imprimir confirmação
+	*/
 
 	fmt.Println("\n   Processo controlador concluído\n")
 }
@@ -71,17 +120,19 @@ func ElectionStage(TaskId int, in chan mensagem, out chan mensagem, leader int) 
 
 	actualLeader = leader // indicação do lider veio por parâmatro
 
-	temp := <-in                                                                                                            // ler mensagem
-	fmt.Printf("%2d: recebi mensagem %d, [ %d, %d, %d ]\n", TaskId, temp.tipo, temp.corpo[0], temp.corpo[1], temp.corpo[2]) //Corpo é o vetor de votação e precisa inclunir todos valores de preocessos que pertencem ao anel
-
+	temp := <-in // ler mensagem
+	//Corpo é o vetor de votação e precisa inclunir todos valores de preocessos que pertencem ao anel
+	fmt.Printf("%2d: recebi mensagem %d, [ %d, %d, %d ]\n", TaskId, temp.tipo, temp.corpo[0], temp.corpo[1], temp.corpo[2])
 	switch temp.tipo {
 	case 1:
 		{
 			fmt.Printf("Caso 1 \n")
+
 			controle <- -5
 		}
 	case 2:
 		{
+			//fmt.Printf("%2d: recebi mensagem %d, [ %d, %d, %d ]\n", TaskId, temp.tipo, temp.corpo[0], temp.corpo[1], temp.corpo[2])
 			bFailed = true
 			fmt.Printf("%2d: falho %v \n", TaskId, bFailed)
 			fmt.Printf("%2d: lider atual %d\n", TaskId, actualLeader)
@@ -89,6 +140,8 @@ func ElectionStage(TaskId int, in chan mensagem, out chan mensagem, leader int) 
 		}
 	case 3:
 		{
+
+			//fmt.Printf("%2d: recebi mensagem %d, [ %d, %d, %d ]\n", TaskId, temp.tipo, temp.corpo[0], temp.corpo[1], temp.corpo[2])
 			bFailed = false
 			fmt.Printf("%2d: falho %v \n", TaskId, bFailed)
 			fmt.Printf("%2d: lider atual %d\n", TaskId, actualLeader)
@@ -96,24 +149,26 @@ func ElectionStage(TaskId int, in chan mensagem, out chan mensagem, leader int) 
 		}
 	case 4:
 		{
+			//fmt.Printf("%2d: recebi mensagem %d, [ %d, %d, %d ]\n", TaskId, temp.tipo, temp.corpo[0], temp.corpo[1], temp.corpo[2])
 			fmt.Printf("Caso 4 \n")
 			controle <- -5
 		}
 	case 5:
 		{
+			//fmt.Printf("%2d: recebi mensagem %d, [ %d, %d, %d ]\n", TaskId, temp.tipo, temp.corpo[0], temp.corpo[1], temp.corpo[2])
 			fmt.Printf("Caso 5 \n")
 			controle <- -5
 		}
 	default:
 		{
-			fmt.Printf("%2d: não conheço este tipo de mensagem\n", TaskId)
-			fmt.Printf("%2d: lider atual %d\n", TaskId, actualLeader)
-			controle <- -5
+			//fmt.Printf("%2d: não conheço este tipo de mensagem\n", TaskId)
+			//fmt.Printf("%2d: lider atual %d\n", TaskId, actualLeader)
+			controle <- 99
 
 		}
 	}
 
-	fmt.Printf("%2d: terminei \n", TaskId)
+	//fmt.Printf("%2d: terminei \n", TaskId)
 }
 
 func main() {
